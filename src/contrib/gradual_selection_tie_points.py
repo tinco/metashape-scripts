@@ -2,7 +2,7 @@ import Metashape
 import sys
 
 """
-Metashape Sparse Point Cloud Filter Script (v 1.5)
+Metashape Sparse Point Cloud Filter Script (v 1.6)
 Matjaz Mori, CPA, June 2019
 Usage:
 Workflow -> Batch Process -> Add -> Run script
