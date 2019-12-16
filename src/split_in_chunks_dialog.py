@@ -7,13 +7,13 @@ from PySide2 import QtGui, QtCore, QtWidgets
 compatible_major_version = "1.6"
 found_major_version = ".".join(Metashape.app.version.split('.')[:2])
 if found_major_version != compatible_major_version:
-    raise Exception("Incompatible Metashape version: {} != {}".format(found_major_version, compatible_major_version))
+    raise Exception("Incompatible Metashape version: {} != {}".format(
+        found_major_version, compatible_major_version))
 
-QUALITY = {"1":  Metashape.UltraQuality,
-           "2":  Metashape.HighQuality,
-           "4":  Metashape.MediumQuality,
-           "8":  Metashape.LowQuality,
-           "16": Metashape.LowestQuality}
+QUALITY = {"1":  1,
+           "2":  2,
+           "4":  4,
+           "8":  8}
 
 FILTERING = {"3": Metashape.NoFiltering,
              "0": Metashape.MildFiltering,
@@ -23,11 +23,11 @@ FILTERING = {"3": Metashape.NoFiltering,
 MESH = {"Arbitrary": Metashape.SurfaceType.Arbitrary,
         "Height Field": Metashape.SurfaceType.HeightField}
 
-DENSE = {"Ultra": Metashape.UltraQuality,
-         "High": Metashape.HighQuality,
-         "Medium": Metashape.MediumQuality,
-         "Low": Metashape.LowQuality,
-         "Lowest": Metashape.LowestQuality}
+DENSE = {"Ultra": 1,
+         "High": 2,
+         "Medium": 4,
+         "Low": 8,
+         "Lowest": 16}
 
 
 def isIdent(matrix):
@@ -82,7 +82,8 @@ class SplitDlg(QtWidgets.QDialog):
             self.denseBox.addItem(element)
 
         self.chkMerge = QtWidgets.QCheckBox("Merge Back")
-        self.chkMerge.setToolTip("Merges back the processing products formed in the individual cells")
+        self.chkMerge.setToolTip(
+            "Merges back the processing products formed in the individual cells")
 
         self.chkSave = QtWidgets.QCheckBox("Autosave")
         self.chkSave.setToolTip("Autosaves the project after each operation")
@@ -142,13 +143,15 @@ class SplitDlg(QtWidgets.QDialog):
         # layout.setAlignment(QtCore.Qt.AlignTop)
         self.setLayout(layout)
 
-        proc_split = lambda: self.splitChunks()
+        def proc_split(): return self.splitChunks()
 
         self.spinX.valueChanged.connect(self.updateGrid)
         self.spinY.valueChanged.connect(self.updateGrid)
 
-        QtCore.QObject.connect(self.btnP1, QtCore.SIGNAL("clicked()"), proc_split)
-        QtCore.QObject.connect(self.btnQuit, QtCore.SIGNAL("clicked()"), self, QtCore.SLOT("reject()"))
+        QtCore.QObject.connect(
+            self.btnP1, QtCore.SIGNAL("clicked()"), proc_split)
+        QtCore.QObject.connect(self.btnQuit, QtCore.SIGNAL(
+            "clicked()"), self, QtCore.SLOT("reject()"))
 
         self.exec()
 
@@ -235,7 +238,8 @@ class SplitDlg(QtWidgets.QDialog):
         for j in range(1, partsY + 1):  # creating new chunks and adjusting bounding box
             for i in range(1, partsX + 1):
                 if not buildDense:
-                    new_chunk = chunk.copy(items=[Metashape.DataSource.DenseCloudData, Metashape.DataSource.DepthMapsData])
+                    new_chunk = chunk.copy(
+                        items=[Metashape.DataSource.DenseCloudData, Metashape.DataSource.DepthMapsData])
                 else:
                     new_chunk = chunk.copy(items=[])
                 new_chunk.label = "Chunk " + str(i) + "_" + str(j)
@@ -246,12 +250,14 @@ class SplitDlg(QtWidgets.QDialog):
 
                 new_region = Metashape.Region()
                 new_rot = r_rotate
-                new_center = Metashape.Vector([(i - 0.5) * x_scale, (j - 0.5) * y_scale, 0.5 * z_scale])
+                new_center = Metashape.Vector(
+                    [(i - 0.5) * x_scale, (j - 0.5) * y_scale, 0.5 * z_scale])
                 new_center = offset + new_rot * new_center
                 new_size = Metashape.Vector([x_scale, y_scale, z_scale])
 
                 if self.edtOvp.text().isdigit():
-                    new_region.size = new_size * (1 + float(self.edtOvp.text()) / 100)
+                    new_region.size = new_size * \
+                        (1 + float(self.edtOvp.text()) / 100)
                 else:
                     new_region.size = new_size
 
